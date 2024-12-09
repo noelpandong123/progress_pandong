@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chapter 5: Designing the Pahimakas App Widget Tree</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        header {
+            background-color: #004d40;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 36px;
+        }
+        nav {
+            background-color: #00796b;
+            padding: 15px 0;
+        }
+        nav ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+        nav ul li {
+            margin: 0 15px;
+        }
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        nav ul li a:hover {
+            background-color: #004d40;
+        }
+        .content {
+            width: 100%;
+            padding: 20px;
+            background-color: white;
+            margin: 0 auto;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 1200px;
+            border-radius: 8px;
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #4caf50;
+            color: white;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .section img {
+            display: block;
+            margin: 10px auto;
+            max-width: 100%;
+        }
+        .tree-diagram {
+            margin: 20px 0;
+            font-family: monospace;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-left: 5px solid #00796b;
+        }
+        pre {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Chapter 5</h1>
+</header>
+
+<nav>
+    <ul>
+        <li><a href="chapter1.html">Chapter 1</a></li>
+        <li><a href="chapter2.html">Chapter 2</a></li>
+        <li><a href="chapter3.html">Chapter 3</a></li>
+        <li><a href="chapter4.html">Chapter 4</a></li>
+        <li><a href="chapter5.html">Chapter 5</a></li>
+        <li><a href="chapter6.html">Chapter 6</a></li>
+        <li><a href="chapter7.html">Chapter 7</a></li>
+        <li><a href="chapter8.html">Chapter 8</a></li>
+    </ul>
+</nav>
+
+<div class="content">
+    <div class="section">
+        <h2> Chapter 5: Overview of Flutter Widget Tree</h2>
+        <p>
+            In Flutter, the widget tree is a structure that organizes all UI elements and their properties. Since everything in Flutter is a widget, the widget tree becomes crucial for managing how the app's UI is built and displayed. In this chapter, I will show how the widget tree is used in my mobile application, "Pahimakas," designed to simplify funeral service management.
+        </p>
+        <p>
+            The app's UI is built by nesting various widgets, such as containers, rows, columns, and buttons. This approach makes the layout flexible and responsive. However, as we nest more widgets, the code can become difficult to maintain, and this is where refactoring becomes essential.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2> Understanding the Full Widget Tree</h2>
+        <p>
+            The full widget tree for the "Pahimakas" app can become quite deep, which may affect code readability and performance. Here's an example of how the widget tree might look when structured deeply.
+        </p>
+        <div class="tree-diagram">
+            <code>
+                MaterialApp<br>
+                ├── Scaffold<br>
+                │   ├── AppBar<br>
+                │   ├── Body<br>
+                │   │   ├── Column<br>
+                │   │   │   ├── TextWidget<br>
+                │   │   │   ├── ImageWidget<br>
+                │   │   │   ├── AnimatedButton (Custom Widget)<br>
+                │   │   │   ├── CustomCardWidget (Custom Widget)<br>
+                │   │   │   └── FooterWidget (Custom Widget)<br>
+                │   └── BottomNavigationBar<br>
+            </code>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2> Refactoring the Widget Tree</h2>
+        <p>
+            To keep the widget tree shallow and more manageable, we refactor the code by breaking down complex widget structures into smaller, reusable widgets. This not only makes the code cleaner but also improves performance by reducing unnecessary nesting.
+        </p>
+        <h3>Refactored Widget Tree</h3>
+        <div class="tree-diagram">
+            <code>
+                MaterialApp<br>
+                ├── HomePage (StatelessWidget)<br>
+                │   ├── AppBar<br>
+                │   ├── Body<br>
+                │   │   ├── HeaderWidget (Custom Widget)<br>
+                │   │   ├── ContentWidget (Custom Widget)<br>
+                │   │   ├── FooterWidget (Custom Widget)<br>
+                │   └── BottomNavigationBarWidget (Custom Widget)<br>
+            </code>
+        </div>
+        <p>
+            In the refactored widget tree, we now have custom widgets like `HeaderWidget`, `ContentWidget`, and `FooterWidget` that handle specific parts of the UI. These widgets are modular and reusable, improving the maintainability of the code.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2> Example: Animated Button Widget</h2>
+        <p>
+            One of the key features in the app is the use of animated buttons. Instead of defining the button in every place it's used, we can create a custom widget that encapsulates its behavior. Here's an example of how the animated button widget is defined:
+        </p>
+        <pre>
+            <code>
+            Widget _buildAnimatedButton(BuildContext context, IconData icon, String label, Color color) {
+                return GestureDetector(
+                    onTap: () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text('$label pressed'),
+                                behavior: SnackBarBehavior.floating,
+                            ),
+                        );
+                    },
+                    child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                        decoration: BoxDecoration(
+                            color: color.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: color, width: 2),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                        child: Row(
+                            children: [
+                                Icon(icon, color: color, size: 28),
+                                const SizedBox(width: 16),
+                                Text(
+                                    label,
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: color,
+                                    ),
+                                ),
+                            ],
+                        ),
+                    ),
+                );
+            }
+            </code>
+        </pre>
+        <p>
+            In this example, the animated button widget is defined as a function. By using a function like this, we avoid repeating the button code throughout the app, making the widget tree shallower and the code easier to maintain.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2> Conclusion</h2>
+        <p>
+            The widget tree is the backbone of a Flutter app’s UI structure. By refactoring complex widget trees into smaller, reusable widgets, we can keep the code organized and maintainable. This approach makes the app easier to scale as more features are added, while also enhancing performance.
+        </p>
+        <p>
+            In the case of "Pahimakas," refactoring the widget tree not only simplified the code but also improved the user experience by allowing for smoother interactions with the app’s UI.
+        </p>
+    </div>
+</div>
+
+
+
+</body>
+</html>
